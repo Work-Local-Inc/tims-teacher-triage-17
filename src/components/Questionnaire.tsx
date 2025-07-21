@@ -158,11 +158,64 @@ export const Questionnaire = () => {
               </Button>
             ) : (
               <div className="flex gap-2">
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    const data = form.getValues();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'tim-questionnaire-data.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
                   <Download className="w-4 h-4" />
                   Download JSON
                 </Button>
-                <Button className="flex items-center gap-2">
+                <Button 
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    // Create a formatted text plan
+                    const data = form.getValues();
+                    const planText = `Tim The Teacher - Project Plan
+=====================================
+
+Business: ${data.businessName || 'Not specified'}
+Description: ${data.businessDescription || 'Not specified'}
+Target Audience: ${data.targetAudience || 'Not specified'}
+
+Primary Goals:
+${data.primaryGoals?.map(goal => `• ${goal}`).join('\n') || '• Not specified'}
+
+Content Topics:
+${data.contentTopics?.map(topic => `• ${topic}`).join('\n') || '• Not specified'}
+
+Course Topics:
+${data.courseTopics?.map(topic => `• ${topic}`).join('\n') || '• Not specified'}
+
+Publishing Frequency: ${data.publishingFrequency || 'Not specified'}
+Course Duration: ${data.courseDuration || 'Not specified'}
+Pricing Model: ${data.pricingModel || 'Not specified'}
+
+Generated on: ${new Date().toLocaleDateString()}`;
+
+                    const blob = new Blob([planText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'tim-project-plan.txt';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    toast({
+                      title: "Plan Downloaded!",
+                      description: "Your project plan has been saved successfully.",
+                    });
+                  }}
+                >
                   <FileText className="w-4 h-4" />
                   Download Plan
                 </Button>
