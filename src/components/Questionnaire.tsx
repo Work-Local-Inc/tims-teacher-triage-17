@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { questionnaireSchema, QuestionnaireFormData } from '@/schemas/questionnaireSchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Download, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, FileText, RotateCcw } from 'lucide-react';
 import { SiteFoundationsStep } from './questionnaire/SiteFoundationsStep';
 import { ContentStrategyStep } from './questionnaire/ContentStrategyStep';
 import { CoursePlanningStep } from './questionnaire/CoursePlanningStep';
@@ -23,12 +23,44 @@ const steps = [
 
 export const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   const form = useForm<QuestionnaireFormData>({
     resolver: zodResolver(questionnaireSchema),
     mode: 'onChange',
   });
+
+  // Load saved data on component mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('tim-questionnaire-data');
+      const savedStep = localStorage.getItem('tim-questionnaire-step');
+      
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        form.reset(parsedData);
+        console.log('Loaded saved questionnaire data:', parsedData);
+      }
+      
+      if (savedStep) {
+        const stepNumber = parseInt(savedStep, 10);
+        if (!isNaN(stepNumber) && stepNumber >= 0 && stepNumber < steps.length) {
+          setCurrentStep(stepNumber);
+          console.log('Restored step position:', stepNumber);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading saved data:', error);
+      toast({
+        title: "Data Recovery Issue",
+        description: "There was an issue loading your saved progress. Starting fresh.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [form, toast]);
 
   const progress = ((currentStep + 1) / steps.length) * 100;
 
@@ -43,6 +75,17 @@ export const Questionnaire = () => {
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 0));
+  };
+
+  const clearProgress = () => {
+    localStorage.removeItem('tim-questionnaire-data');
+    localStorage.removeItem('tim-questionnaire-step');
+    form.reset();
+    setCurrentStep(0);
+    toast({
+      title: "Progress Cleared",
+      description: "All questionnaire data has been cleared. Starting fresh!",
+    });
   };
 
   const renderStepContent = () => {
@@ -106,6 +149,16 @@ export const Questionnaire = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse text-lg">Loading your progress...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
@@ -114,8 +167,19 @@ export const Questionnaire = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold">Tim The Teacher - Project Planner</h1>
-              <div className="text-sm text-muted-foreground">
-                Step {currentStep + 1} of {steps.length}
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-muted-foreground">
+                  Step {currentStep + 1} of {steps.length}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearProgress}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Clear Progress
+                </Button>
               </div>
             </div>
             <Progress value={progress} className="h-2" />
