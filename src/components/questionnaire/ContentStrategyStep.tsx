@@ -94,12 +94,13 @@ export const ContentStrategyStep = ({ form }: ContentStrategyStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(topic)}
+                                checked={(field.value || []).includes(topic)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...field.value, topic])
+                                    ? field.onChange([...currentValue, topic])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== topic)
+                                        currentValue.filter((value) => value !== topic)
                                       )
                                 }}
                               />
@@ -135,12 +136,13 @@ export const ContentStrategyStep = ({ form }: ContentStrategyStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(format)}
+                                checked={(field.value || []).includes(format)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...field.value, format])
+                                    ? field.onChange([...currentValue, format])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== format)
+                                        currentValue.filter((value) => value !== format)
                                       )
                                 }}
                               />
@@ -206,12 +208,13 @@ export const ContentStrategyStep = ({ form }: ContentStrategyStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(goal)}
+                                checked={(field.value || []).includes(goal)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...field.value, goal])
+                                    ? field.onChange([...currentValue, goal])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== goal)
+                                        currentValue.filter((value) => value !== goal)
                                       )
                                 }}
                               />
@@ -273,12 +276,13 @@ export const ContentStrategyStep = ({ form }: ContentStrategyStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(challenge)}
+                                checked={(field.value || []).includes(challenge)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...(field.value || []), challenge])
+                                    ? field.onChange([...currentValue, challenge])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== challenge)
+                                        currentValue.filter((value) => value !== challenge)
                                       )
                                 }}
                               />
