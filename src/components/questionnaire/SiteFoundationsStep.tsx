@@ -123,12 +123,13 @@ export const SiteFoundationsStep = ({ form }: SiteFoundationsStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(goal)}
+                                checked={(field.value || []).includes(goal)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...field.value, goal])
+                                    ? field.onChange([...currentValue, goal])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== goal)
+                                        currentValue.filter((value) => value !== goal)
                                       )
                                 }}
                               />
@@ -164,12 +165,13 @@ export const SiteFoundationsStep = ({ form }: SiteFoundationsStepProps) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(personality)}
+                                checked={(field.value || []).includes(personality)}
                                 onCheckedChange={(checked) => {
+                                  const currentValue = field.value || [];
                                   return checked
-                                    ? field.onChange([...field.value, personality])
+                                    ? field.onChange([...currentValue, personality])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== personality)
+                                        currentValue.filter((value) => value !== personality)
                                       )
                                 }}
                               />
